@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estado de Resultados de Ingeniería Hídrica</title>
+<style>
+:root{
+  --navy:#0B2545; --gold:#E8A317; --teal:#0F8B8D; --teal-dark:#0A5F61; --teal-light:#D5EEEE;
+  --red:#C0392B; --red-light:#F6DAD6; --slate:#4A5A85; --slate-light:#DDE1EC; --ok:#2E8B57; --ink:#1F2937; --gray:#6B7280; --mist:#EEF2F7; --line:#D1D9E6; --bg:#F7F9FC; --card:#FFFFFF;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif;font-size:16px;line-height:1.45}
+header{background:var(--navy);color:#fff;padding:28px 16px 32px}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header .wrap{padding:0}
+.kicker{color:var(--gold);font-weight:700;letter-spacing:.12em;font-size:13px;text-transform:uppercase}
+h1{font-family:Cambria,Caladea,Georgia,serif;font-size:32px;margin:6px 0 8px;line-height:1.15}
+header p{margin:0;color:#D1D9E6;max-width:720px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{background:rgba(255,255,255,.1);border-radius:999px;padding:4px 12px;font-size:14px}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:20px 0}
+h2{font-family:Cambria,Caladea,Georgia,serif;color:var(--navy);font-size:24px;margin:0 0 4px}
+.lead{color:var(--gray);margin:0 0 16px}
+.ctx{background:#FFF6E0;border-radius:10px;padding:14px 16px;margin:0 0 4px}
+.ctx b{color:var(--navy)}
+.ref{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:12px}
+.ref div{border-radius:8px;padding:8px 10px;font-size:14px}
+.ref .p{background:var(--red-light)} .ref .p b{color:var(--red)}
+.ref .t{background:var(--slate-light)} .ref .t b{color:var(--slate)}
+table.acc{width:100%;border-collapse:collapse}
+table.acc th{background:var(--navy);color:#fff;text-align:left;font-size:14px;padding:10px;font-weight:700}
+table.acc td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.acc tr:nth-child(even) td{background:#FAFBFD}
+.name{font-weight:700;color:var(--navy)}
+.desc{color:var(--gray);font-size:14px}
+.val{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+select,input[type=text]{font:inherit;font-size:15px;padding:7px 8px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);width:100%}
+select:focus,input:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+.good{border-color:var(--ok)!important;background:#EAF6EF!important}
+.bad{border-color:var(--red)!important;background:#FBE9E7!important}
+.hint{display:none;font-size:13px;color:var(--red);margin-top:4px}
+.hint.show{display:block}
+/* Estado vertical */
+.stmt{max-width:640px;margin:0 auto;border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.stmt .hd{text-align:center;font-weight:700;color:var(--navy);margin-bottom:14px;line-height:1.35}
+.stmt .hd span{display:block;font-weight:400;color:var(--gray);font-size:14px}
+.ln{display:grid;grid-template-columns:1fr 210px;gap:12px;align-items:center;padding:5px 0}
+.ln .v{text-align:right;font-variant-numeric:tabular-nums}
+.ln.h{font-weight:700;margin-top:8px}
+.ln.sub{padding-left:16px}
+.ln.tot{font-weight:700;border-radius:6px;padding:7px 8px;margin-top:4px}
+.c-a{color:var(--teal)} .c-p{color:var(--red)} .c-t{color:var(--slate)}
+.bg-a{background:var(--teal-light)} .bg-p{background:var(--red-light)} .bg-t{background:var(--slate-light)} .bg-n{background:var(--navy);color:#fff}
+.ln input{text-align:right}
+.ln .hint{grid-column:1/-1}
+.q{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}
+.q.good{background:#EAF6EF} .q.bad{background:#FBE9E7}
+.q p{margin:0 0 10px;font-weight:700;color:var(--navy)}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 4px;cursor:pointer;border-radius:6px}
+.q label:hover{background:rgba(15,139,141,.06)}
+.q input{margin-top:4px;accent-color:var(--teal)}
+.btn{font:inherit;font-weight:700;font-size:17px;border:0;border-radius:10px;padding:13px 22px;cursor:pointer}
+.btn-main{background:var(--teal);color:#fff}
+.btn-main:hover{background:var(--teal-dark)}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+#msg{color:var(--red);font-weight:700}
+#result,#evidence{display:none}
+.score{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.big{font-family:Cambria,Caladea,Georgia,serif;font-size:56px;font-weight:700;color:var(--teal);line-height:1}
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.part{background:var(--mist);border-radius:10px;padding:12px}
+.part b{display:block;font-size:22px;color:var(--navy)}
+.note{font-size:14px;color:var(--gray)}
+footer{color:var(--gray);font-size:13px;text-align:center;padding:24px 16px 40px}
+@media (max-width:720px){
+  h1{font-size:26px}
+  table.acc thead{display:none}
+  table.acc, table.acc tbody, table.acc tr, table.acc td{display:block;width:100%}
+  table.acc tr{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;padding:6px}
+  table.acc td{border:0;padding:6px 8px}
+  table.acc td.val{text-align:left}
+  table.acc td[data-l]::before{content:attr(data-l);display:block;font-size:12px;color:var(--gray);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .parts{grid-template-columns:1fr}
+  .stmt{padding:14px 10px}
+  .ln{grid-template-columns:1fr 150px}
+}
+</style>
+<style>
+.ln .neg{color:var(--gray);font-size:13px}
+.ref .g{background:#E3F2EA} .ref .g b{color:#2E8B57}
+.ref .a{background:#FCEFD2} .ref .a b{color:#B7800F}
+.ref .n{background:var(--mist)} .ref .n b{color:var(--gray)}
+.bg-g{background:#E3F2EA}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker">Contabilidad de Empresas · Unidad II · Sesión 4</div>
+    <h1>El Estado de Resultados de Ingeniería Hídrica del Eje S.A.S.</h1>
+    <p>Clasifica las partidas del mes, arma la cascada del Estado de Resultados y analiza el resultado. Al calificar verás de inmediato qué está bien y qué debes revisar.</p>
+    <div class="chips"><span class="chip">3 partes · 26 puntos</span><span class="chip">Nota sobre 5,0</span><span class="chip">Evidencia PNG para Classroom</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <div class="ctx">Ingeniería Hídrica del Eje S.A.S. hace mantenimiento y diseño de sistemas de bombeo de agua para conjuntos residenciales e industrias. Estas son las partidas de <b>octubre de 2026</b>. ¡Ojo! Dos de ellas no van en el Estado de Resultados.</div>
+    <div class="ref" aria-label="Categorías">
+      <div class="g"><b>IO</b> Ingreso operacional</div><div class="a"><b>CO</b> Costo operacional</div><div class="t"><b>GO</b> Gasto operacional</div>
+      <div class="g"><b>OI</b> Otro ingreso</div><div class="p"><b>OG</b> Otro gasto</div><div class="n"><b>NO</b> No va en el Estado de Resultados</div>
+    </div>
+  </section>
+
+  <section class="card" id="p1">
+    <h2>Parte 1 · Clasifica las partidas</h2>
+    <p class="lead">Elige dónde va cada partida. Recuerda: costo si está pegado al servicio; gasto si es para administrar o vender. 15 puntos.</p>
+    <table class="acc">
+      <thead><tr><th>Partida</th><th style="text-align:right">Valor</th><th style="width:250px">Clasificación</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+  <section class="card" id="p2">
+    <h2>Parte 2 · Arma el Estado de Resultados</h2>
+    <p class="lead">Escribe los valores en pesos, sin signo $ (puedes usar puntos de miles). Si un valor es negativo, escríbelo con signo menos, por ejemplo -250.000. 7 puntos.</p>
+    <div class="stmt">
+      <div class="hd">INGENIERÍA HÍDRICA DEL EJE S.A.S.<br>Estado de Resultados<span>Del 1 al 31 de octubre de 2026 · Cifras en pesos colombianos</span></div>
+      <div class="ln tot bg-g"><label for="t_io">Ingresos operacionales</label><input type="text" inputmode="numeric" id="t_io"><div class="hint" id="h_io">Suma solo lo que la empresa facturó por servicios prestados en octubre.</div></div>
+      <div class="ln sub"><label for="t_co">(−) Costos operacionales</label><input type="text" inputmode="numeric" id="t_co"><div class="hint" id="h_co">Solo lo gastado directamente para prestar el servicio: son cuatro partidas.</div></div>
+      <div class="ln tot bg-t"><label for="t_ub">(=) UTILIDAD BRUTA</label><input type="text" inputmode="numeric" id="t_ub"><div class="hint" id="h_ub">Utilidad bruta = ingresos operacionales − costos operacionales.</div></div>
+      <div class="ln sub"><label for="t_go">(−) Gastos operacionales</label><input type="text" inputmode="numeric" id="t_go"><div class="hint" id="h_go">Administración y ventas: son cinco partidas.</div></div>
+      <div class="ln tot bg-t"><label for="t_uo">(=) UTILIDAD OPERACIONAL</label><input type="text" inputmode="numeric" id="t_uo"><div class="hint" id="h_uo">Utilidad operacional = utilidad bruta − gastos operacionales.</div></div>
+      <div class="ln sub"><label for="t_ot">(+/−) Otros ingresos y gastos (neto)</label><input type="text" id="t_ot"><div class="hint" id="h_ot">Otros ingresos − otros gastos. Si los gastos son mayores, el resultado es negativo.</div></div>
+      <div class="ln tot bg-n"><label for="t_ue">(=) UTILIDAD DEL EJERCICIO</label><input type="text" inputmode="numeric" id="t_ue"><div class="hint" id="h_ue">Utilidad operacional ± otros ingresos y gastos.</div></div>
+    </div>
+  </section>
+
+  <section class="card" id="p3">
+    <h2>Parte 3 · Analiza</h2>
+    <p class="lead">4 puntos.</p>
+    <div id="qs"></div>
+  </section>
+
+  <section class="card">
+    <div class="actions">
+      <button class="btn btn-main" id="grade">Calificar</button>
+      <span id="msg"></span>
+    </div>
+    <p class="note" style="margin:10px 0 0">Puedes calificar varias veces. El comprobante registra el número de intentos.</p>
+  </section>
+
+  <section class="card" id="result">
+    <h2>Resultado</h2>
+    <div class="score">
+      <div class="big" id="nota">0,0</div>
+      <div><div id="pts" style="font-weight:700;color:var(--navy)"></div><div class="note" id="att"></div></div>
+    </div>
+    <div class="parts">
+      <div class="part">Parte 1 · Clasificación<b id="s1">0 / 15</b></div>
+      <div class="part">Parte 2 · Estado de Resultados<b id="s2">0 / 7</b></div>
+      <div class="part">Parte 3 · Análisis<b id="s3">0 / 4</b></div>
+    </div>
+    <p class="note" id="advice" style="margin-top:12px"></p>
+  </section>
+
+  <section class="card" id="evidence">
+    <h2>Evidencia para Classroom</h2>
+    <p class="lead">Escribe tu nombre completo y descarga el comprobante. Súbelo a la tarea en Google Classroom.</p>
+    <div class="actions">
+      <input type="text" id="student" placeholder="Nombre y apellidos" style="max-width:380px" autocomplete="name">
+      <button class="btn btn-gold" id="dl">Descargar comprobante PNG</button>
+    </div>
+    <p class="note" id="dlmsg" style="margin-top:10px"></p>
+  </section>
+</main>
+<footer>Universidad Tecnológica de Pereira · Ingeniería Industrial · Contabilidad de Empresas (II243)</footer>
+
+<script>
+(function(){
+  var CL = [["IO","IO · Ingreso operacional"],["CO","CO · Costo operacional"],["GO","GO · Gasto operacional"],["OI","OI · Otro ingreso"],["OG","OG · Otro gasto"],["NO","NO · No va en el Estado de Resultados"]];
+  var CLN = {IO:"Ingreso operacional",CO:"Costo operacional",GO:"Gasto operacional",OI:"Otro ingreso",OG:"Otro gasto",NO:"No va en el ER"};
+  var ACC = [
+    {n:"Salario de los técnicos de mantenimiento", d:"Técnicos que reparan las bombas en las obras", v:8500000, c:"CO"},
+    {n:"Ingresos por mantenimiento de bombas", d:"Servicios prestados y facturados en octubre", v:24000000, c:"IO"},
+    {n:"Arriendo de la oficina", d:"Oficina administrativa en Pereira", v:1600000, c:"GO"},
+    {n:"Anticipo recibido de un cliente", d:"Pago por un mantenimiento que se hará en diciembre", v:3000000, c:"NO"},
+    {n:"Repuestos usados en los mantenimientos", d:"Sellos, rodamientos e impulsores instalados a los clientes", v:5200000, c:"CO"},
+    {n:"Intereses de la cuenta de ahorros", d:"Rendimientos pagados por el banco", v:150000, c:"OI"},
+    {n:"Salario de la contadora", d:"Lleva la contabilidad de la empresa", v:2800000, c:"GO"},
+    {n:"Publicidad en redes sociales", d:"Campaña para conseguir nuevos conjuntos residenciales", v:700000, c:"GO"},
+    {n:"Combustible del vehículo de servicio", d:"Lleva a los técnicos y los repuestos a las obras", v:900000, c:"CO"},
+    {n:"Ingresos por diseño de sistemas de bombeo", d:"Dos diseños entregados en octubre a clientes industriales", v:4000000, c:"IO"},
+    {n:"Multa por retraso en una entrega", d:"Penalización por entregar tarde un mantenimiento", v:450000, c:"OG"},
+    {n:"Abono a capital del préstamo bancario", d:"Pago de parte de la deuda (no incluye intereses)", v:600000, c:"NO"},
+    {n:"Servicios públicos de la oficina", d:"Energía, agua e internet de la sede administrativa", v:400000, c:"GO"},
+    {n:"Alquiler de equipo de izaje para las obras", d:"Grúa pequeña para bajar las bombas a los tanques", v:1400000, c:"CO"},
+    {n:"Comisión del vendedor", d:"Por cerrar dos contratos nuevos", v:500000, c:"GO"}
+  ];
+  var TOT = {t_io:28000000, t_co:16000000, t_ub:12000000, t_go:6000000, t_uo:6000000, t_ot:-300000, t_ue:5700000};
+  var TLAB = {t_io:"Ingresos operacionales", t_co:"Costos operacionales", t_ub:"Utilidad bruta", t_go:"Gastos operacionales", t_uo:"Utilidad operacional", t_ot:"Otros ingresos y gastos (neto)", t_ue:"Utilidad del ejercicio"};
+  var QS = [
+    {p:"¿Cuál es el margen bruto de la empresa (utilidad bruta ÷ ingresos operacionales)?", o:["43 %","57 %","21 %","20 %"], a:0, h:"Divide la utilidad bruta entre los ingresos operacionales, no los costos."},
+    {p:"¿Por qué el anticipo de $3.000.000 no es ingreso de octubre?", o:["Porque todavía no ha entrado al banco","Porque el servicio aún no se ha prestado: hasta diciembre es una obligación con el cliente (pasivo)","Porque es un ingreso no operacional","Sí es ingreso de octubre, porque el dinero ya se recibió"], a:1, h:"Recuerda el principio de lo devengado: ¿el servicio ya se prestó?"},
+    {p:"¿Por qué el abono a capital del préstamo no es un gasto?", o:["Porque se pagó en efectivo","Porque es un costo del servicio","Porque disminuye una deuda (pasivo): la empresa no pierde nada, deja de deber. Solo los intereses serían gasto","Porque es un gasto de ventas"], a:2, h:"Piensa en la ecuación contable: ¿qué baja cuando se abona a la deuda?"},
+    {p:"¿A dónde va la utilidad del ejercicio de $5.700.000?", o:["Al pasivo, porque se le debe a la DIAN","Al patrimonio del Balance General, porque pertenece a los dueños","Al activo corriente, porque es dinero en el banco","No va a ningún lado: se queda en el Estado de Resultados"], a:1, h:"Recuerda la diapositiva «Los dos estados están conectados»."}
+  ];
+
+  var fmt=function(v){return "$"+v.toLocaleString("es-CO");};
+  var rows=document.getElementById("rows");
+  ACC.forEach(function(a,i){
+    var tr=document.createElement("tr");
+    var sel='<select id="c'+i+'" aria-label="Clasificación de '+a.n+'"><option value="">Elige…</option>'+CL.map(function(l){return '<option value="'+l[0]+'">'+l[1]+'</option>';}).join("")+'</select>';
+    tr.innerHTML='<td><div class="name">'+(i+1)+'. '+a.n+'</div><div class="desc">'+a.d+'</div></td><td class="val" data-l="Valor">'+fmt(a.v)+'</td><td data-l="Clasificación">'+sel+'</td>';
+    rows.appendChild(tr);
+  });
+  var qs=document.getElementById("qs");
+  QS.forEach(function(q,i){
+    var d=document.createElement("div"); d.className="q"; d.id="q"+i;
+    d.innerHTML='<p>'+(i+1)+'. '+q.p+'</p>'+q.o.map(function(o,j){return '<label><input type="radio" name="r'+i+'" value="'+j+'"><span>'+o+'</span></label>';}).join("")+'<div class="hint" id="qh'+i+'">Pista: '+q.h+'</div>';
+    qs.appendChild(d);
+  });
+  function num(s){ s=(s||"").trim(); var neg=/^[-−(]/.test(s); var t=s.replace(/[^0-9]/g,""); if(t==="") return null; var v=parseInt(t,10); return neg?-v:v; }
+  function mark(el,ok){el.classList.remove("good","bad"); el.classList.add(ok?"good":"bad");}
+
+  var attempts=0,last=null;
+  document.getElementById("grade").addEventListener("click",function(){
+    var msg=document.getElementById("msg"); msg.textContent="";
+    var missing=0;
+    ACC.forEach(function(a,i){ if(!document.getElementById("c"+i).value) missing++; });
+    Object.keys(TOT).forEach(function(id){ if(num(document.getElementById(id).value)===null) missing++; });
+    QS.forEach(function(q,i){ if(!document.querySelector('input[name="r'+i+'"]:checked')) missing++; });
+    if(missing>0){ msg.textContent="Te faltan "+missing+" respuestas por completar."; return; }
+    attempts++;
+    var s1=0,s2=0,s3=0,detail=[],tvals={},qans=[];
+    ACC.forEach(function(a,i){ var el=document.getElementById("c"+i), ok=el.value===a.c; mark(el,ok); if(ok) s1++; detail.push({n:a.n,c:el.value,ok:ok}); });
+    Object.keys(TOT).forEach(function(id){ var el=document.getElementById(id), v=num(el.value), ok=v===TOT[id]; tvals[id]=v; mark(el,ok); document.getElementById("h_"+id.slice(2)).classList.toggle("show",!ok); if(ok) s2++; });
+    QS.forEach(function(q,i){ var v=parseInt(document.querySelector('input[name="r'+i+'"]:checked').value,10), ok=v===q.a; mark(document.getElementById("q"+i),ok); document.getElementById("qh"+i).classList.toggle("show",!ok); if(ok) s3++; qans.push(ok); });
+    var pts=s1+s2+s3, nota=Math.round(pts/26*50)/10;
+    last={s1:s1,s2:s2,s3:s3,pts:pts,nota:nota,detail:detail,tvals:tvals,qans:qans,attempt:attempts,when:new Date()};
+    document.getElementById("result").style.display="block";
+    document.getElementById("evidence").style.display="block";
+    document.getElementById("nota").textContent=nota.toFixed(1).replace(".",",");
+    document.getElementById("pts").textContent=pts+" de 26 puntos";
+    document.getElementById("att").textContent="Intento "+attempts;
+    document.getElementById("s1").textContent=s1+" / 15";
+    document.getElementById("s2").textContent=s2+" / 7";
+    document.getElementById("s3").textContent=s3+" / 4";
+    document.getElementById("advice").textContent=pts===26?"¡Excelente! Tu Estado de Resultados está completo. Escribe tu nombre y descarga tu comprobante.":"Las casillas en rojo tienen error. Revísalas con ayuda de las pistas y vuelve a calificar, o descarga el comprobante con este resultado.";
+    document.getElementById("result").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+
+  function hash(str){var h=2166136261; for(var i=0;i<str.length;i++){h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return ("00000000"+(h>>>0).toString(16)).slice(-8).toUpperCase();}
+  function rr(c,x0,y0,w,h,r){c.beginPath();c.moveTo(x0+r,y0);c.arcTo(x0+w,y0,x0+w,y0+h,r);c.arcTo(x0+w,y0+h,x0,y0+h,r);c.arcTo(x0,y0+h,x0,y0,r);c.arcTo(x0,y0,x0+w,y0,r);c.closePath();}
+  function money(v){return (v<0?"−$":"$")+Math.abs(v).toLocaleString("es-CO");}
+  document.getElementById("dl").addEventListener("click",function(){
+    var name=document.getElementById("student").value.trim(), m=document.getElementById("dlmsg");
+    if(!last){ m.textContent="Primero califica la actividad."; return; }
+    if(name.length<5){ m.textContent="Escribe tu nombre completo para generar el comprobante."; return; }
+    var W=1200,H=1340,cv=document.createElement("canvas"); cv.width=W; cv.height=H;
+    var x=cv.getContext("2d"), F='Calibri, Carlito, "Segoe UI", Arial, sans-serif', S='Cambria, Caladea, Georgia, serif';
+    x.fillStyle="#FFFFFF"; x.fillRect(0,0,W,H);
+    x.fillStyle="#0B2545"; x.fillRect(0,0,W,190);
+    x.fillStyle="#E8A317"; x.font="700 22px "+F; x.fillText("CONTABILIDAD DE EMPRESAS · UNIDAD II · SESIÓN 4",60,62);
+    x.fillStyle="#FFFFFF"; x.font="700 40px "+S; x.fillText("Estado de Resultados · Ingeniería Hídrica",60,118);
+    x.fillStyle="#D1D9E6"; x.font="22px "+F; x.fillText("Comprobante de actividad autocalificable",60,158);
+    var d=last.when, when=d.toLocaleDateString("es-CO",{day:"2-digit",month:"long",year:"numeric"})+" · "+d.toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
+    x.fillStyle="#1F2937"; x.font="700 30px "+F; x.fillText(name,60,250);
+    x.fillStyle="#6B7280"; x.font="22px "+F; x.fillText(when+" · Intento "+last.attempt,60,285);
+    x.fillStyle="#EEF2F7"; rr(x,820,215,320,150,16); x.fill();
+    x.fillStyle="#0F8B8D"; x.font="700 76px "+S; x.textAlign="center"; x.fillText(last.nota.toFixed(1).replace(".",","),980,310);
+    x.fillStyle="#1F2937"; x.font="22px "+F; x.fillText(last.pts+" de 26 puntos",980,345); x.textAlign="left";
+    [["Parte 1 · Clasificación",last.s1+" / 15"],["Parte 2 · Estado de Resultados",last.s2+" / 7"],["Parte 3 · Análisis",last.s3+" / 4"]].forEach(function(p,i){ var px=60+i*360; x.fillStyle="#EEF2F7"; rr(x,px,395,340,86,12); x.fill(); x.fillStyle="#6B7280"; x.font="20px "+F; x.fillText(p[0],px+20,428); x.fillStyle="#0B2545"; x.font="700 30px "+F; x.fillText(p[1],px+20,466); });
+    x.fillStyle="#0B2545"; x.font="700 24px "+F; x.fillText("Respuestas de la Parte 1",60,535);
+    var y=575;
+    last.detail.forEach(function(r,i){ var nm=(i+1)+". "+r.n; if(nm.length>52) nm=nm.slice(0,50)+"…";
+      x.fillStyle="#1F2937"; x.font="19px "+F; x.fillText(nm,60,y);
+      x.fillStyle=r.ok?"#2E8B57":"#C0392B"; x.font="700 19px "+F; x.fillText((r.ok?"✓ ":"✗ ")+CLN[r.c],820,y); y+=34; });
+    y+=16; x.fillStyle="#0B2545"; x.font="700 24px "+F; x.fillText("Partes 2 y 3",60,y); y+=36;
+    Object.keys(TOT).forEach(function(id,j){ var v=last.tvals[id], ok=v===TOT[id], col=j%2, px=60+col*560, py=y+Math.floor(j/2)*32;
+      x.fillStyle="#1F2937"; x.font="19px "+F; x.fillText(TLAB[id],px,py);
+      x.fillStyle=ok?"#2E8B57":"#C0392B"; x.font="700 19px "+F; x.fillText((ok?"✓ ":"✗ ")+money(v),px+300,py); });
+    y+=4*32+10;
+    x.fillStyle="#0B2545"; x.font="700 22px "+F; x.fillText("Preguntas de análisis",60,y);
+    last.qans.forEach(function(ok,i){ x.fillStyle=ok?"#2E8B57":"#C0392B"; x.font="700 22px "+F; x.fillText((i+1)+(ok?" ✓":" ✗"),330+i*80,y); });
+    var code=hash(name+"|"+last.pts+"|"+last.attempt+"|"+d.toISOString()+"|"+JSON.stringify(last.detail));
+    x.fillStyle="#6B7280"; x.font="18px "+F; x.fillText("Código de verificación: "+code,60,H-40);
+    x.textAlign="right"; x.fillText("UTP · Ingeniería Industrial · II243",W-60,H-40);
+    var a=document.createElement("a");
+    a.download="Sesion4_EstadoResultados_"+name.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ ]/g,"").trim().replace(/\s+/g,"_")+".png";
+    a.href=cv.toDataURL("image/png"); document.body.appendChild(a); a.click(); a.remove();
+    m.textContent="Comprobante descargado (código "+code+"). Súbelo a la tarea en Classroom.";
+  });
+})();
+</script>
+</body>
+</html>
